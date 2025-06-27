@@ -1,0 +1,136 @@
+#!/bin/bash
+
+# Vérification que le script est exécuté en root
+if [ "$EUID" -ne 0 ]; then
+    echo "Ce script doit être exécuté en tant que root."
+    exit 1
+fi
+
+# Questions à l'utilisateur
+read -p "Quel ID souhaitez-vous pour le container LXC ? [105] : " CONTAINER_ID
+CONTAINER_ID=${CONTAINER_ID:-105}
+
+read -p "Quel est le nom de votre container ? [bitwarden] : " CONTAINER_NAME
+CONTAINER_NAME=${CONTAINER_NAME:-bitwarden}
+
+read -p "Quelle est l'adresse IP de votre container ? [192.168.30.105] : " CONTAINER_IP
+CONTAINER_IP=${CONTAINER_IP:-192.168.30.105}
+
+read -p "Entrez l'IP du serveur principal [10.1.1.15]: " SERVER_IP
+SERVER_IP=${SERVER_IP:-10.1.1.15}
+
+read -p "Entrez l'ID du container DNS [100]: " DNS_ID
+DNS_ID=${DNS_ID:-100}
+
+read -p "Entrez le nom de votre zone/domaine [int.com]: " ZONE_NAME
+ZONE_NAME=${ZONE_NAME:-int.com}
+
+read -p "Entrez l'ID du container Traefik [102]: " TRAEFIK_ID
+TRAEFIK_ID=${TRAEFIK_ID:-102}
+
+
+while true; do
+    read -s -p "Entrez le mot de passe root du container : " ROOT_PASSWORD
+    echo
+    read -s -p "Confirmez le mot de passe : " PASSWORD_CONFIRM
+    echo
+    if [ "$ROOT_PASSWORD" = "$PASSWORD_CONFIRM" ]; then
+        break
+    else
+        echo "❌ Les mots de passe ne correspondent pas. Veuillez réessayer."
+    fi
+done
+
+read -s -p "Entrez le mot de passe de la base de donnée de votre DNS: " MYSQL_ROOT_PASSWORD
+echo
+
+# Création du container LXC basique sous Debian (modifie selon ton template et stockage)
+pct create $CONTAINER_ID local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst \
+    --hostname $CONTAINER_NAME \
+    --cores 2 \
+    --memory 2048 \
+    --net0 name=eth0,bridge=vmbr1,ip=${CONTAINER_IP}/24,gw=192.168.30.254 \
+    --rootfs local-lvm:15 \
+    --password $ROOT_PASSWORD \
+    --unprivileged 0 \
+    --start 1
+
+
+# 🔧 Ajout de la configuration LXC pour permettre Docker
+CONF_FILE="/etc/pve/lxc/${CONTAINER_ID}.conf"
+
+cat <<EOF >> "$CONF_FILE"
+lxc.apparmor.profile: unconfined
+lxc.cap.drop:
+lxc.cgroup2.devices.allow: a
+lxc.mount.auto: proc sys
+lxc.apparmor.allow_nesting: 1
+EOF
+
+# Redémarrage du container pour appliquer les changements
+pct reboot $CONTAINER_ID
+
+
+echo "Installation de docker..."
+
+pct exec $CONTAINER_ID -- bash -c "
+  apt-get update && apt-get install -y \
+    ca-certificates curl gnupg lsb-release
+
+  mkdir -p /etc/apt/keyrings
+
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+  echo \"deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable\" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+  apt-get update
+
+  apt-get install -y docker-ce docker-ce-cli containerd.io
+"
+
+pct exec $CONTAINER_ID -- systemctl start docker
+pct exec $CONTAINER_ID -- systemctl enable docker
+
+echo "Installation de docker compose..."
+
+pct exec $CONTAINER_ID -- bash -c 'curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose'
+pct exec $CONTAINER_ID -- chmod +x /usr/local/bin/docker-compose
+
+echo "Installation de Bitwarden..."
+
+pct exec $CONTAINER_ID -- mkdir -p /root/bitwarden
+
+pct exec $CONTAINER_ID -- bash -c "cd /root/bitwarden && curl -Lso bitwarden.sh https://go.btwrdn.co/bw-sh && chmod +x bitwarden.sh"
+
+pct exec $DNS_ID -- bash -c "
+mysql -u root -p$MYSQL_ROOT_PASSWORD -e \"
+USE powerdns;
+INSERT INTO records (domain_id, name, type, content, ttl, prio, disabled)
+VALUES (
+  (SELECT id FROM domains WHERE name = '$ZONE_NAME'),
+  'bitwarden.$ZONE_NAME',
+  'A',
+  '$SERVER_IP',
+  3600,
+  NULL,
+  0
+);
+\""
+
+pct exec $TRAEFIK_ID -- bash -c "cat > /etc/traefik/dynamic/bitwarden.yml << 'EOF'
+http:
+  routers:
+    bitwarden-router:
+      rule: \"Host(\`bitwarden.$ZONE_NAME\`)\"
+      entryPoints:
+        - web
+      service: bitwarden-service
+
+  services:
+    bitwarden-service:
+      loadBalancer:
+        servers:
+          - url: 'http://$CONTAINER_IP:80'
+EOF"
+
+echo "[✓] Le script de Bitwarden est chargé, connectez vous au container puis lancez le script en faisant: ./bitwarden.sh install (dans le dossier bitwarden)"
