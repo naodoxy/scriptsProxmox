@@ -61,4 +61,4 @@ pct exec $CONTAINER_ID -- apt-get install libpam-ldap libnss-ldap nslcd
 
 
 echo "[✓] OpenVPN est installé et l'authentification LDAP est configurée."
-echo "[✓] Pour vous y connecter, importez le fichier sur la machine cliente et ajoutez la ligne "auth-user-pass" après "auth SHA512" dans le fichier."
+echo "[✓] Pour vous y connecter, importez le fichier sur la machine cliente et ajoutez la ligne auth-user-pass après auth SHA512 dans le fichier."
