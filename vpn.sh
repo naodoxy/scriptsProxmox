@@ -55,10 +55,10 @@ pct reboot $CONTAINER_ID
 
 pct exec $CONTAINER_ID -- wget https://git.io/vpn -O /root/openvpn-install.sh
 
-# Règles NAT
-iptables -t nat -A PREROUTING -i vmbr0 -p udp -d $SERVER1_IP --dport $D_PORT -j DNAT --to-destination $CONTAINER_IP:$D_PORT
-iptables-save > /etc/iptables/rules.v4
+pct exec $CONTAINER_ID -- bash openvpn-install.sh
 
-echo "[✓] Le script de OpenVPN est chargé, connectez vous au container puis lancez le script en faisant: bash openvpn-install.sh"
-echo "[✓] Le port sur lequel il faut bind OVPN sera celui que vous avez choisi plus tôt"
+pct exec $CONTAINER_ID -- apt-get install libpam-ldap libnss-ldap nslcd
 
+
+echo "[✓] OpenVPN est installé et l'authentification LDAP est configurée."
+echo "[✓] Pour vous y connecter, importez le fichier sur la machine cliente et ajoutez la ligne "auth-user-pass" après "auth SHA512" dans le fichier."
