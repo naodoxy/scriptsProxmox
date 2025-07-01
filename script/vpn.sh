@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./network_config.sh
+[ -f /tmp/.network_env ] && source /tmp/.network_env
 
 # Vérification que le script est exécuté en root
 if [ "$EUID" -ne 0 ]; then

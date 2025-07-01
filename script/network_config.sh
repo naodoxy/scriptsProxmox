@@ -9,9 +9,9 @@ if [ -z "$LXC_NETWORK" ]; then
   LXC_BASE=$(echo "$LXC_NETWORK" | cut -d'.' -f1-3)
   LXC_CIDR=$(echo "$LXC_NETWORK" | cut -d'/' -f2)
 
-  # Export pour rendre dispo dans les autres scripts
-  export LXC_NETWORK
-  export LXC_BASE
-  export LXC_CIDR
-  export LXC_GATEWAY
-fi
+# Exporter dans un fichier temporaire
+cat <<EOF > /tmp/.network_env
+LXC_BASE=$LXC_BASE
+LXC_CIDR=$LXC_CIDR
+LXC_GATEWAY=$LXC_GATEWAY
+EOF
