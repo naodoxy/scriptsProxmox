@@ -41,34 +41,47 @@ while true; do
     exit 0
   fi
 
-  if [ "$selected_service" == "Tous les services" ]; then
-    echo "Installation de tous les services..."
-    for svc in "${services[@]}"; do
-      if [[ "$svc" != "Quitter" && "$svc" != "Tous les services" ]]; then
-        script_name=$(echo "$svc" | tr '[:upper:]' '[:lower:]' | tr -d ' ' | tr -d '-').sh
-        full_path="$SCRIPTS_DIR/$script_name"
+if [ "$selected_service" == "Tous les services" ]; then
+  echo "Installation de tous les services..."
 
-        if [ -f "$full_path" ]; then
-          echo "-> Installation de $svc..."
-          bash "$full_path"
-        else
-          echo "/!\ Script manquant pour $svc ($full_path)"
-        fi
+  # Exécuter config réseau si pas encore faite
+  if [ ! -f /tmp/.network_env ]; then
+    bash script/network_config.sh
+  fi
+
+  for svc in "${services[@]}"; do
+    if [[ "$svc" != "Quitter" && "$svc" != "Tous les services" ]]; then
+      script_name=$(echo "$svc" | tr '[:upper:]' '[:lower:]' | tr -d ' ' | tr -d '-').sh
+      full_path="$SCRIPTS_DIR/$script_name"
+
+      if [ -f "$full_path" ]; then
+        echo "-> Installation de $svc..."
+        bash "$full_path"
+      else
+        echo "/!\\ Script manquant pour $svc ($full_path)"
       fi
-    done
-    echo "Tous les services ont été traités."
-    continue
-  fi
+    fi
+  done
 
-  # Construire le nom du script à exécuter
-  script_name=$(echo "$selected_service" | tr '[:upper:]' '[:lower:]' | tr -d ' ' | tr -d '-').sh
-  full_path="$SCRIPTS_DIR/$script_name"
+  echo "Tous les services ont été traités."
+  rm -f /tmp/.network_env
+  continue
+fi
 
-  # Exécuter le script s’il existe
-  if [ -f "$full_path" ]; then
-    echo "-> Lancement de l'installation de $selected_service..."
-    bash "$full_path"
-  else
-    echo "/!\ Le script pour $selected_service est introuvable à l'emplacement : $full_path"
-  fi
-done
+# Exécuter config réseau si pas encore faite
+if [ ! -f /tmp/.network_env ]; then
+  bash script/network_config.sh
+fi
+
+# Construire le nom du script à exécuter
+script_name=$(echo "$selected_service" | tr '[:upper:]' '[:lower:]' | tr -d ' ' | tr -d '-').sh
+full_path="$SCRIPTS_DIR/$script_name"
+
+# Exécuter le script s’il existe
+if [ -f "$full_path" ]; then
+  echo "-> Lancement de l'installation de $selected_service..."
+  bash "$full_path"
+  rm -f /tmp/.network_env
+else
+  echo "/!\\ Script $selected_service introuvable à l’emplacement : $full_path"
+fi
