@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source script/network_config.sh
+
 # Vérification que le script est exécuté en root
 if [ "$EUID" -ne 0 ]; then
     echo "Ce script doit être exécuté en tant que root."
@@ -13,8 +15,7 @@ CONTAINER_ID=${CONTAINER_ID:-106}
 read -p "Quel est le nom de votre container ? [LDAP] : " CONTAINER_NAME
 CONTAINER_NAME=${CONTAINER_NAME:-LDAP}
 
-read -p "Quelle est l'adresse IP de votre container ? [192.168.30.106] : " CONTAINER_IP
-CONTAINER_IP=${CONTAINER_IP:-192.168.30.106}
+CONTAINER_IP="${LXC_BASE}.${CONTAINER_ID}"
 
 while true; do
     read -s -p "Entrez le mot de passe root du container : " ROOT_PASSWORD
@@ -69,7 +70,7 @@ pct create $CONTAINER_ID local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zs
     --hostname $CONTAINER_NAME \
     --cores 1 \
     --memory 512 \
-    --net0 name=eth0,bridge=vmbr1,ip=${CONTAINER_IP}/24,gw=192.168.30.254 \
+    --net0 name=eth0,bridge=vmbr1,ip=${CONTAINER_IP}/${LXC_CIDR},gw=${LXC_GATEWAY} \
     --rootfs local-lvm:5 \
     --password $ROOT_PASSWORD \
     --unprivileged 1 \

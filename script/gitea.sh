@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source script/network_config.sh
+
 # Vérification que le script est exécuté en root
 if [ "$EUID" -ne 0 ]; then
     echo "Ce script doit être exécuté en tant que root."
@@ -13,9 +15,6 @@ CONTAINER_ID=${CONTAINER_ID:-103}
 read -p "Quel est le nom de votre container ? [gitea] : " CONTAINER_NAME
 CONTAINER_NAME=${CONTAINER_NAME:-gitea}
 
-read -p "Quelle est l'adresse IP de votre container ? [192.168.30.103] : " CONTAINER_IP
-CONTAINER_IP=${CONTAINER_IP:-192.168.30.103}
-
 read -p "Entrez l'IP du serveur principal [10.1.1.15]: " SERVER_IP
 SERVER_IP=${SERVER_IP:-10.1.1.15}
 
@@ -27,6 +26,8 @@ ZONE_NAME=${ZONE_NAME:-int.com}
 
 read -p "Entrez l'ID du container Traefik [102]: " TRAEFIK_ID
 TRAEFIK_ID=${TRAEFIK_ID:-102}
+
+CONTAINER_IP="${LXC_BASE}.${CONTAINER_ID}"
 
 while true; do
     read -s -p "Entrez le mot de passe root du container : " ROOT_PASSWORD
@@ -61,12 +62,11 @@ pct create $CONTAINER_ID local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zs
     --hostname $CONTAINER_NAME \
     --cores 1 \
     --memory 512 \
-    --net0 name=eth0,bridge=vmbr1,ip=${CONTAINER_IP}/24,gw=192.168.30.254 \
+    --net0 name=eth0,bridge=vmbr1,ip=${CONTAINER_IP}/${LXC_CIDR},gw=${LXC_GATEWAY} \
     --rootfs local-lvm:5 \
     --password $ROOT_PASSWORD \
     --unprivileged 1 \
     --start 1
-
 
 echo "[*] Installation de Gitea dans le container..."
 
