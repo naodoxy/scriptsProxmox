@@ -1,5 +1,14 @@
 #!/bin/bash
 
+#!/bin/bash
+
+# Supprimer le fichier temporaire quand le script se termine ou est interrompu
+cleanup() {
+  rm -f /tmp/.network_env
+  echo "Fichier temporaire supprimé."
+}
+trap 'cleanup; exit' INT TERM
+
 # Chemin vers le dossier contenant les scripts
 SCRIPTS_DIR="./script"
 
@@ -85,3 +94,4 @@ if [ -f "$full_path" ]; then
 else
   echo "/!\\ Script $selected_service introuvable à l’emplacement : $full_path"
 fi
+done
