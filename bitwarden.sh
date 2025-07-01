@@ -102,6 +102,31 @@ pct exec $CONTAINER_ID -- mkdir -p /root/bitwarden
 
 pct exec $CONTAINER_ID -- bash -c "cd /root/bitwarden && curl -Lso bitwarden.sh https://go.btwrdn.co/bw-sh && chmod +x bitwarden.sh"
 
+
+pct exec $CONTAINER_ID -- bash -c "cd /root/bitwarden && ./bitwarden.sh install"
+
+pct exec $CONTAINER_ID -- bash -c '
+ENV_FILE="/root/bitwarden/bwdata/env/global.override.env"
+
+sed -i "/^globalSettings__mail__/d" "$ENV_FILE"
+
+cat <<EOF >> "$ENV_FILE"
+globalSettings__mail__replyToEmail=bitwardenproxmox@gmail.com
+globalSettings__mail__smtp__host=smtp.gmail.com
+globalSettings__mail__smtp__port=587
+globalSettings__mail__smtp__ssl=false
+globalSettings__mail__smtp__username=bitwardenproxmox@gmail.com
+globalSettings__mail__smtp__password=ixfpmcevicygoktd
+globalSettings__mail__smtp__trustServer=true
+globalSettings__mail__smtp__startTls=true
+EOF
+'
+
+echo "✔ SMTP configuré dans le conteneur $CONTAINER_ID"
+
+
+pct exec $CONTAINER_ID -- bash -c "cd /root/bitwarden/ && ./bitwarden.sh start"
+
 pct exec $DNS_ID -- bash -c "
 mysql -u root -p$MYSQL_ROOT_PASSWORD -e \"
 USE powerdns;
@@ -133,4 +158,5 @@ http:
           - url: 'http://$CONTAINER_IP:80'
 EOF"
 
-echo "[✓] Le script de Bitwarden est chargé, connectez vous au container puis lancez le script en faisant: ./bitwarden.sh install (dans le dossier bitwarden)"
+
+echo "[✓] Bitwarden est installé"
