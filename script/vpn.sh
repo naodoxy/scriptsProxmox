@@ -56,9 +56,9 @@ pct reboot $CONTAINER_ID
 
 pct exec $CONTAINER_ID -- wget https://git.io/vpn -O /root/openvpn-install.sh
 
-pct exec $CONTAINER_ID -- bash openvpn-install.sh
+pct exec $CONTAINER_ID -- bash /root/openvpn-install.sh
 
-pct exec $CONTAINER_ID -- apt-get install libpam-ldap libnss-ldap nslcd
+pct exec $CONTAINER_ID -- apt-get -y install libpam-ldap libnss-ldap nslcd
 
 
 echo "[✓] OpenVPN est installé et l'authentification LDAP est configurée."
