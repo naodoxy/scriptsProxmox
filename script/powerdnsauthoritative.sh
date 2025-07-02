@@ -38,10 +38,13 @@ while true; do
     echo
     read -s -p "Confirmez le mot de passe : " PASSWORD_CONFIRM
     echo
-    if [ "$ROOT_PASSWORD" = "$PASSWORD_CONFIRM" ]; then
-        break
+
+    if [ "$ROOT_PASSWORD" != "$PASSWORD_CONFIRM" ]; then
+        echo "Les mots de passe ne correspondent pas. Veuillez réessayer."
+    elif [ ${#ROOT_PASSWORD} -lt 5 ]; then
+        echo "Le mot de passe doit contenir au moins 5 caractères. Veuillez réessayer."
     else
-        echo "❌ Les mots de passe ne correspondent pas. Veuillez réessayer."
+        break
     fi
 done
 
@@ -49,19 +52,13 @@ read -p "Quelle est l'IP de votre serveur proxmox? [172.16.1.110] : " SERVER1_IP
 SERVER1_IP=${SERVER1_IP:-172.16.1.110}
 
 while true; do
-    read -s -p "Quel mot de passe voulez-vous pour votre base de données PowerDNS ? : " PDNS_DB_PASSWORD
+    read -s -p "Quel mot de passe voulez vous pour votre base de donnée de PowerDNS?: " PDNS_DB_PASSWORD
     echo
     read -s -p "Confirmez le mot de passe : " PASSWORD_CONFIRM
     echo
-
-    if [ "$PDNS_DB_PASSWORD" != "$PASSWORD_CONFIRM" ]; then
-        echo "Les mots de passe ne correspondent pas. Veuillez réessayer."
-    elif [ ${#PDNS_DB_PASSWORD} -lt 5 ]; then
-        echo "Le mot de passe doit contenir au moins 5 caractères. Veuillez réessayer."
-    else
+    if [ "$PDNS_DB_PASSWORD" = "$PASSWORD_CONFIRM" ]; then
         break
-    fi
-done
+    else
 
 read -p "Entrez la clé API pour PowerDNS ADMIN: " PDNS_API_KEY
 PDNS_API_KEY=${PDNS_API_KEY}
