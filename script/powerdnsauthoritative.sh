@@ -45,18 +45,21 @@ while true; do
     fi
 done
 
-read -p "Quelle est l'IP du serveur (pour DNAT) ? [172.16.1.110] : " SERVER1_IP
+read -p "Quelle est l'IP de votre serveur proxmox? [172.16.1.110] : " SERVER1_IP
 SERVER1_IP=${SERVER1_IP:-172.16.1.110}
 
 while true; do
-    read -s -p "Quel mot de passe voulez vous pour votre base de donnée?: " PDNS_DB_PASSWORD
+    read -s -p "Quel mot de passe voulez-vous pour votre base de données PowerDNS ? : " PDNS_DB_PASSWORD
     echo
     read -s -p "Confirmez le mot de passe : " PASSWORD_CONFIRM
     echo
-    if [ "$PDNS_DB_PASSWORD" = "$PASSWORD_CONFIRM" ]; then
-        break
+
+    if [ "$PDNS_DB_PASSWORD" != "$PASSWORD_CONFIRM" ]; then
+        echo "Les mots de passe ne correspondent pas. Veuillez réessayer."
+    elif [ ${#PDNS_DB_PASSWORD} -lt 5 ]; then
+        echo "Le mot de passe doit contenir au moins 5 caractères. Veuillez réessayer."
     else
-        echo "❌ Les mots de passe ne correspondent pas. Veuillez réessayer."
+        break
     fi
 done
 
@@ -84,6 +87,14 @@ pct create $CONTAINER_ID local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zs
     --password $ROOT_PASSWORD \
     --unprivileged 1 \
     --start 1
+
+# Vérification de la création du conteneur
+if [ $? -ne 0 ]; then
+    echo "Échec de la création du conteneur LXC (ID: $CONTAINER_ID). Arrêt du script."
+    exit 1
+else
+    echo "Conteneur LXC (ID: $CONTAINER_ID) créé avec succès."
+fi
 
 echo "[*] Installation de PowerDNS dans le container..."
 
