@@ -34,14 +34,14 @@ CONTAINER_NAME=${CONTAINER_NAME:-LDAP}
 CONTAINER_IP="${LXC_BASE}.${CONTAINER_ID}"
 
 while true; do
-    read -s -p "Quel mot de passe voulez-vous pour votre base de données PowerDNS ? : " PDNS_DB_PASSWORD
+    read -s -p "Entrez le mot de passe root du container : " ROOT_PASSWORD
     echo
     read -s -p "Confirmez le mot de passe : " PASSWORD_CONFIRM
     echo
 
-    if [ "$PDNS_DB_PASSWORD" != "$PASSWORD_CONFIRM" ]; then
+    if [ "$ROOT_PASSWORD" != "$PASSWORD_CONFIRM" ]; then
         echo "Les mots de passe ne correspondent pas. Veuillez réessayer."
-    elif [ ${#PDNS_DB_PASSWORD} -lt 5 ]; then
+    elif [ ${#ROOT_PASSWORD} -lt 5 ]; then
         echo "Le mot de passe doit contenir au moins 5 caractères. Veuillez réessayer."
     else
         break
