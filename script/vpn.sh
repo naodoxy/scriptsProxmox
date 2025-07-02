@@ -8,6 +8,22 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
+TEMPLATE_NAME="ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
+TEMPLATE_PATH="/var/lib/vz/template/cache/$TEMPLATE_NAME"
+
+# Vérification que la template existe
+if [ ! -f "$TEMPLATE_PATH" ]; then
+    echo "Template $TEMPLATE_NAME non trouvée. Téléchargement avec pveam..."
+    pveam download local "$TEMPLATE_NAME"
+    if [ $? -ne 0 ]; then
+        echo "Échec du téléchargement de la template avec pveam."
+        exit 1
+    fi
+    echo "Template téléchargée avec succès."
+else
+    echo "Template $TEMPLATE_NAME trouvée."
+fi
+
 # Questions à l'utilisateur
 read -p "Quel ID souhaitez-vous pour le container LXC ? [104] : " CONTAINER_ID
 CONTAINER_ID=${CONTAINER_ID:-104}
