@@ -38,10 +38,13 @@ while true; do
     echo
     read -s -p "Confirmez le mot de passe : " PASSWORD_CONFIRM
     echo
-    if [ "$ROOT_PASSWORD" = "$PASSWORD_CONFIRM" ]; then
-        break
+
+    if [ "$ROOT_PASSWORD" != "$PASSWORD_CONFIRM" ]; then
+        echo "Les mots de passe ne correspondent pas. Veuillez réessayer."
+    elif [ ${#ROOT_PASSWORD} -lt 5 ]; then
+        echo "Le mot de passe doit contenir au moins 5 caractères. Veuillez réessayer."
     else
-        echo "❌ Les mots de passe ne correspondent pas. Veuillez réessayer."
+        break
     fi
 done
 
@@ -61,6 +64,14 @@ pct create $CONTAINER_ID local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zs
     --password $ROOT_PASSWORD \
     --unprivileged 1 \
     --start 1
+    
+# Vérification de la création du conteneur
+if [ $? -ne 0 ]; then
+    echo "Échec de la création du conteneur LXC (ID: $CONTAINER_ID). Arrêt du script."
+    exit 1
+else
+    echo "Conteneur LXC (ID: $CONTAINER_ID) créé avec succès."
+fi
 
 modprobe tun
 LXC_CONF="/etc/pve/lxc/${CONTAINER_ID}.conf"
