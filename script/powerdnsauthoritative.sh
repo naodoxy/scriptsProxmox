@@ -63,7 +63,7 @@ pct create $CONTAINER_ID local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zs
     --hostname $CONTAINER_NAME \
     --cores 1 \
     --memory 512 \
-    --net0 name=eth0,bridge=vmbr1,ip=${CONTAINER_IP}/${LXC_CIDR},gw=${LXC_GATEWAY} \
+    --net0 name=eth0,bridge=$LXC_VMBR,ip=${CONTAINER_IP}/${LXC_CIDR},gw=${LXC_GATEWAY} \
     --rootfs local-lvm:5 \
     --password $ROOT_PASSWORD \
     --unprivileged 1 \
