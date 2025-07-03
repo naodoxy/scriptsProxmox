@@ -60,7 +60,7 @@ if [ -z "$LXC_NETWORK" ]; then
   done
 
   read -p "Entrez le nom de la carte bridge de proxmox (par défaut vmbr0) : " LXC_VMBR
-  LXC_VMBR=${LXC_VMBR:-vmrb0}
+  LXC_VMBR=${LXC_VMBR:-vmbr0}
 
   # Découpe le réseau pour en extraire la base IP et CIDR
   LXC_BASE=$(echo "$LXC_NETWORK" | cut -d'.' -f1-3)
