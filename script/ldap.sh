@@ -90,7 +90,7 @@ read -p "Entrez l'ID du container Traefik [102]: " TRAEFIK_ID
 TRAEFIK_ID=${TRAEFIK_ID:-102}
 
 read -p "Quel est le nom de votre organisation? [ex: LDAP]: " ORGANISATION
-ORGANISATION=${ORGANISATION}
+ORGANISATION=${ORGANISATION:-LDAP}
 
 while true; do
   read -p "Entrez l'IP du serveur principal [10.1.1.15]: " SERVER_IP
@@ -108,8 +108,30 @@ echo "IP validée : $SERVER_IP"
 read -p "Entrez le nom de votre zone/domaine [int.com]: " ZONE_NAME
 ZONE_NAME=${ZONE_NAME:-int.com}
 
-read -p "Entrez le nom de votre zone/domaine sous format dc=votre,dc=domaine [dc=int,dc=com]: " DOMAIN_NAME
-DOMAIN_NAME=${DOMAIN_NAME:-dc=int,dc=com}
+# Générer automatiquement DOMAIN_NAME à partir de ZONE_NAME
+IFS='.' read -ra parts <<< "$ZONE_NAME"
+DOMAIN_NAME=""
+for part in "${parts[@]}"; do
+    DOMAIN_NAME+="dc=$part,"
+done
+# Retirer la virgule finale
+DOMAIN_NAME=${DOMAIN_NAME%,}
+
+
+read -p "Entrez le nom de votre zone/domaine [int.com]: " zone
+zone=${zone:-int.com}  # valeur par défaut si vide
+
+# Convertir en format dc=xxx,dc=yyy
+IFS='.' read -ra parts <<< "$zone"
+dc=""
+for part in "${parts[@]}"; do
+    dc+="dc=$part,"
+done
+# Retirer la virgule finale
+dc=${dc%,}
+
+echo "Zone : $zone"
+echo "Zone en format LDAP : $dc"
 
 cat <<EOF >> infra_conf.txt
 
