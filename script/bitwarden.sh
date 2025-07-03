@@ -89,7 +89,7 @@ while true; do
     fi
 done
 
-read -s -p "Entrez le mot de passe de la base de donnée de votre DNS: " MYSQL_ROOT_PASSWORD
+read -s -p "Entrez le mot de passe de la base de données de votre DNS: " MYSQL_ROOT_PASSWORD
 echo
 
 cat <<EOF >> infra_conf.txt
