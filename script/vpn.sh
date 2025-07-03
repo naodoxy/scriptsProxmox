@@ -54,6 +54,17 @@ SERVER1_IP=${SERVER1_IP:-172.16.1.110}
 read -p "Sur quel port voulez vous bind OpenVPN? [1194]: " D_PORT
 D_PORT=${D_PORT:-1194}
 
+cat <<EOF >> infra_conf.txt
+
+Configuration de Traefik:
+
+Nom du conteneur: $CONTAINER_NAME
+ID du conteneur: $CONTAINER_ID
+IP du conteneur: $CONTAINER_IP
+Gateway du conteneur: $LXC_GATEWAY
+Port de OpenVPN: $D_PORT
+EOF
+
 # Création du container LXC basique sous Debian (modifie selon ton template et stockage)
 pct create $CONTAINER_ID local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst \
     --hostname $CONTAINER_NAME \
