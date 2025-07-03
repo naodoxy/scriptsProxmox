@@ -70,7 +70,7 @@ done
 echo "IP validée : $SERVER1_IP"
 
 while true; do
-    read -s -p "Quel mot de passe voulez vous pour votre base de donnée de PowerDNS?: " PDNS_DB_PASSWORD
+    read -s -p "Quel mot de passe voulez vous pour votre base de données de PowerDNS?: " PDNS_DB_PASSWORD
     echo
     read -s -p "Confirmez le mot de passe : " PASSWORD_CONFIRM
     echo
