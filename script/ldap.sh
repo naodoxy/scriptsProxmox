@@ -93,7 +93,7 @@ read -p "Quel est le nom de votre organisation? [ex: LDAP]: " ORGANISATION
 ORGANISATION=${ORGANISATION:-LDAP}
 
 while true; do
-  read -p "Entrez l'IP du serveur principal [10.1.1.15]: " SERVER_IP
+  read -p "Entrez l'IP du serveur proxmox [10.1.1.15]: " SERVER_IP
   SERVER_IP=${SERVER_IP:-10.1.1.15}
 
   if is_valid_ip "$SERVER_IP"; then
