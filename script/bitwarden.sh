@@ -208,20 +208,61 @@ VALUES (
 );
 \""
 
+pct exec $TRAEFIK_ID -- bash -c "
+DOMAIN_NAME=bitwarden.int.com
+CERT_DIR=/etc/ssl/bitwarden
+
+mkdir -p \$CERT_DIR
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout \$CERT_DIR/bitwarden.key \
+  -out \$CERT_DIR/bitwarden.crt \
+  -subj \"/CN=\$DOMAIN_NAME\"
+
+echo 'Certificats générés dans \$CERT_DIR'
+"
+
+pct exec $TRAEFIK_ID -- bash -c 'cat <<EOF >> /etc/traefik/traefik.yml
+tls:
+  certificates:
+    - certFile: "/etc/ssl/bitwarden/bitwarden.crt"
+      keyFile: "/etc/ssl/bitwarden/bitwarden.key"
+EOF
+'
+
+echo 'Fichier de configuration TLS généré dans /etc/traefik/dynamic/bitwarden_tls.yml'
+"
+
 pct exec $TRAEFIK_ID -- bash -c "cat > /etc/traefik/dynamic/bitwarden.yml << 'EOF'
+---
 http:
   routers:
-    bitwarden-router:
-      rule: \"Host(\`bitwarden.$ZONE_NAME\`)\"
+    bitwarden-router-http:
       entryPoints:
         - web
+      rule: \"Host(\`bitwarden.$ZONE_NAME\`)\"
+      middlewares:
+        - redirect-to-https
+      service: noop@internal
+
+    bitwarden-router-https:
+      entryPoints:
+        - websecure
+      rule: \"Host(\`bitwarden.$ZONE_NAME\`)\"
+      tls: {}
       service: bitwarden-service
+
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
 
   services:
     bitwarden-service:
       loadBalancer:
         servers:
-          - url: 'http://$CONTAINER_IP:80'
+          - url: \"http://$CONTAINER_IP:80\"
 EOF"
 
 
