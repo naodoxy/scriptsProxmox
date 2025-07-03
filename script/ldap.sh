@@ -117,22 +117,6 @@ done
 # Retirer la virgule finale
 DOMAIN_NAME=${DOMAIN_NAME%,}
 
-
-read -p "Entrez le nom de votre zone/domaine [int.com]: " zone
-zone=${zone:-int.com}  # valeur par défaut si vide
-
-# Convertir en format dc=xxx,dc=yyy
-IFS='.' read -ra parts <<< "$zone"
-dc=""
-for part in "${parts[@]}"; do
-    dc+="dc=$part,"
-done
-# Retirer la virgule finale
-dc=${dc%,}
-
-echo "Zone : $zone"
-echo "Zone en format LDAP : $dc"
-
 cat <<EOF >> infra_conf.txt
 
 Configuration de Gitea:
