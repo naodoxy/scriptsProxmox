@@ -28,7 +28,7 @@ is_valid_cidr() {
       return 1
     fi
     # Vérifie masque entre 0 et 32
-    if ((prefix >= 0 && prefix <= 32)); then
+    if ((prefix >= 1 && prefix <= 31)); then
       return 0
     else
       return 1
@@ -46,7 +46,7 @@ if [ -z "$LXC_NETWORK" ]; then
     if is_valid_cidr "$LXC_NETWORK"; then
       break
     else
-      echo "Erreur : réseau invalide. Format attendu : X.X.X.X/X avec masque entre 0 et 32."
+      echo "Erreur : réseau invalide. Format attendu : X.X.X.X/X avec masque entre 1 et 32."
     fi
   done
 
