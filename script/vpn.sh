@@ -68,8 +68,8 @@ while true; do
 done
 
 while true; do
-  read -p "Quelle est l'IP du serveur ? [172.16.1.110] : " SERVER1_IP
-  SERVER1_IP=${SERVER1_IP:-172.16.1.110}
+  read -p "Quelle est l'IP du serveur proxmox? [10.1.1.15] : " SERVER1_IP
+  SERVER1_IP=${SERVER1_IP:-10.1.1.15}
 
   if is_valid_ip "$SERVER1_IP"; then
     break
