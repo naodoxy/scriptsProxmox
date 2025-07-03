@@ -106,7 +106,7 @@ while true; do
   fi
 done
 
-echo "IP validée : $SERVER_IP
+echo "IP validée : $SERVER_IP"
 
 read -p "Entrez le nom de votre zone/domaine [int.com]: " ZONE_NAME
 ZONE_NAME=${ZONE_NAME:-int.com}
