@@ -81,6 +81,16 @@ ZONE_NAME=${ZONE_NAME:-int.com}
 read -p "Entrez le nom de votre zone/domaine sous format dc=votre,dc=domaine [dc=int,dc=com]: " DOMAIN_NAME
 DOMAIN_NAME=${DOMAIN_NAME:-dc=int,dc=com}
 
+cat <<EOF >> infra_conf.txt
+
+Configuration de Gitea:
+
+Nom du conteneur: $CONTAINER_NAME
+ID du conteneur: $CONTAINER_ID
+IP du conteneur: $CONTAINER_IP
+Gateway du conteneur: $LXC_GATEWAY
+Nom de domaine sous forme dc (pour LDAP): DOMAIN_NAME
+EOF
 
 echo "[*] Création du container LXC $CONTAINER_NAME avec IP $CONTAINER_IP..."
 
