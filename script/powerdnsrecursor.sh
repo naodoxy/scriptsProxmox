@@ -2,6 +2,25 @@
 
 [ -f /tmp/.network_env ] && source /tmp/.network_env
 
+#Fonction de vérification du format des IP
+
+is_valid_ip() {
+  local ip=$1
+  # Vérifie le format global avec regex
+  if [[ $ip =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
+    # Vérifie que chaque octet est entre 0 et 255
+    IFS='.' read -r -a octets <<< "$ip"
+    for octet in "${octets[@]}"; do
+      if ((octet < 0 || octet > 255)); then
+        return 1
+      fi
+    done
+    return 0
+  else
+    return 1
+  fi
+}
+
 # Vérification que le script est exécuté en root
 if [ "$EUID" -ne 0 ]; then
     echo "Ce script doit être exécuté en tant que root."
@@ -51,8 +70,18 @@ done
 read -p "Entrez le nom de votre zone/domaine [int.com]: " YOUR_DOMAIN
 YOUR_DOMAIN=${YOUR_DOMAIN:-int.com}
 
-read -p "Quelle est l'IP du serveur DNS Authoritative? [192.168.30.100]: " DNS_AUTH_IP
-DNS_AUTH_IP=${DNS_AUTH_IP:-192.168.30.100}
+while true; do
+  read -p "Quelle est l'IP du serveur DNS Authoritative? [192.168.30.100]: " DNS_AUTH_IP
+  DNS_AUTH_IP=${DNS_AUTH_IP:-192.168.30.100}
+
+  if is_valid_ip "$DNS_AUTH_IP"; then
+    break
+  else
+    echo "Erreur : L'adresse IP n'est pas valide. Merci de réessayer."
+  fi
+done
+
+echo "IP validée : $DNS_AUTH_IP"
 
 echo "[*] Création du container LXC $CONTAINER_NAME avec IP $CONTAINER_IP..."
 
