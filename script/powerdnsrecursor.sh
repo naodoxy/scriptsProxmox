@@ -117,6 +117,8 @@ fi
 
 echo "[*] Installation de PowerDNS Recursor dans le container..."
 
+sleep 6
+
 pct exec $CONTAINER_ID -- bash -c "apt update && apt install pdns-recursor -y"
 
 echo "[*] Configuration de pdns.conf..."
