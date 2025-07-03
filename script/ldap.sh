@@ -2,6 +2,26 @@
 
 [ -f /tmp/.network_env ] && source /tmp/.network_env
 
+#Fonction de vérification du format des IP
+
+is_valid_ip() {
+  local ip=$1
+  # Vérifie le format global avec regex
+  if [[ $ip =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
+    # Vérifie que chaque octet est entre 0 et 255
+    IFS='.' read -r -a octets <<< "$ip"
+    for octet in "${octets[@]}"; do
+      if ((octet < 0 || octet > 255)); then
+        return 1
+      fi
+    done
+    return 0
+  else
+    return 1
+  fi
+}
+
+
 # Vérification que le script est exécuté en root
 if [ "$EUID" -ne 0 ]; then
     echo "Ce script doit être exécuté en tant que root."
@@ -72,8 +92,18 @@ TRAEFIK_ID=${TRAEFIK_ID:-102}
 read -p "Quel est le nom de votre organisation? [ex: LDAP]: " ORGANISATION
 ORGANISATION=${ORGANISATION}
 
-read -p "Entrez l'IP du serveur principal [10.1.1.15]: " SERVER_IP
-SERVER_IP=${SERVER_IP:-10.1.1.15}
+while true; do
+  read -p "Entrez l'IP du serveur principal [10.1.1.15]: " SERVER_IP
+  SERVER_IP=${SERVER_IP:-10.1.1.15}
+
+  if is_valid_ip "$SERVER_IP"; then
+    break
+  else
+    echo "Erreur : L'adresse IP n'est pas valide. Merci de réessayer."
+  fi
+done
+
+echo "IP validée : $SERVER_IP"
 
 read -p "Entrez le nom de votre zone/domaine [int.com]: " ZONE_NAME
 ZONE_NAME=${ZONE_NAME:-int.com}
