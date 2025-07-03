@@ -30,6 +30,7 @@ while true; do
   echo "=============================="
   echo "Quel service voulez-vous installer ?"
   echo "/!\ Installez en priorité PowerDNS Authoritative, Recursor et Traefik"
+  echo "/!\ Attention à bien noter les mots de passe crées dans les configurations"
   echo "=============================="
   for i in "${!services[@]}"; do
     echo "$((i+1)). ${services[$i]}"
