@@ -77,7 +77,7 @@ echo
 
 cat <<EOF >> infra_conf.txt
 
-Configuration de GITEA
+Configuration de Gitea:
 
 Nom du conteneur: $CONTAINER_NAME
 ID du conteneur: $CONTAINER_ID
