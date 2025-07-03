@@ -119,6 +119,8 @@ fi
 
 echo "[*] Installation de Traefik dans le container..."
 
+sleep 6
+
 pct exec $CONTAINER_ID -- bash -c "
 cd /tmp && \
 wget -q https://github.com/traefik/traefik/releases/download/v3.4.1/traefik_v3.4.1_linux_amd64.tar.gz && \
