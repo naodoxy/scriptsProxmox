@@ -140,6 +140,8 @@ fi
 
 echo "[*] Installation de PowerDNS dans le container..."
 
+sleep 6
+
 pct exec $CONTAINER_ID -- bash -c "apt update && apt install -y pdns-server pdns-backend-mysql mariadb-server mariadb-client"
 
 echo "[*] Configuration de MariaDB..."
