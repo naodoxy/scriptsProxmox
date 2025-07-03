@@ -69,7 +69,7 @@ done
 
 
 while true; do
- read -p "Quelle est l'IP du serveur ? [172.16.1.110] : " SERVER_IP
+ read -p "Quelle est l'IP du serveur proxmox? [10.1.1.15] : " SERVER_IP
  SERVER_IP=${SERVER_IP:-172.16.1.110}
 
   if is_valid_ip "$SERVER_IP"; then
