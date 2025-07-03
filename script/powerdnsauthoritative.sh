@@ -60,7 +60,7 @@ while true; do
         break
     else
 
-read -p "Entrez la clé API pour PowerDNS ADMIN: " PDNS_API_KEY
+read -p "Entrez la clé API pour PowerDNS ADMIN: (vous pouvez en générer une sur https://codepen.io/corenominal/pen/rxOmMJ) " PDNS_API_KEY
 PDNS_API_KEY=${PDNS_API_KEY}
 
 read -p "Sur quel port voulez vous accéder à PowerDNS Admin? [9595]: " D_PORT
@@ -71,6 +71,20 @@ SERVER_IP=${SERVER_IP:-10.1.1.15}
 
 read -p "Entrez le nom de votre zone/domaine [int.com]: " ZONE_NAME
 ZONE_NAME=${ZONE_NAME:-int.com}
+
+cat <<EOF >> infra_conf.txt
+
+Configuration de LDAP:
+
+Nom du conteneur: $CONTAINER_NAME
+ID du conteneur: $CONTAINER_ID
+IP du conteneur: $CONTAINER_IP
+Gateway du conteneur: $LXC_GATEWAY
+Clé API de PowerDNS ADMIN: $PDNS_API_KEY
+Port d'accès à l'interface web du DNS: $D_PORT
+Nom de domaine/zone: $ZONE_NAME
+EOF
+
 
 echo "[*] Création du container LXC $CONTAINER_NAME avec IP $CONTAINER_IP..."
 
