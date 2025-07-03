@@ -88,6 +88,9 @@ while true; do
     if [ "$PDNS_DB_PASSWORD" = "$PASSWORD_CONFIRM" ]; then
         break
     else
+        break
+    fi
+done
 
 read -p "Entrez la clé API pour PowerDNS ADMIN: (vous pouvez en générer une sur https://codepen.io/corenominal/pen/rxOmMJ) " PDNS_API_KEY
 PDNS_API_KEY=${PDNS_API_KEY}
