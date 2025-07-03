@@ -165,6 +165,8 @@ else
     echo "Conteneur LXC (ID: $CONTAINER_ID) créé avec succès."
 fi
 
+sleep 6
+
 pct exec $CONTAINER_ID -- bash -c "apt-get update && apt-get install -y locales"
 pct exec $CONTAINER_ID -- bash -c "locale-gen en_US.UTF-8"
 pct exec $CONTAINER_ID -- bash -c "update-locale LANG=en_US.UTF-8"
