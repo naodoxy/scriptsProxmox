@@ -113,6 +113,8 @@ else
     echo "Conteneur LXC (ID: $CONTAINER_ID) créé avec succès."
 fi
 
+sleep 6
+
 modprobe tun
 LXC_CONF="/etc/pve/lxc/${CONTAINER_ID}.conf"
 
