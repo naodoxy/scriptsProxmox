@@ -54,6 +54,18 @@ SERVER_IP=${SERVER_IP:-172.16.1.110}
 read -p "Sur quel port voulez vous accéder à l'interface web? [18110]: " D_PORT
 D_PORT=${D_PORT:-18110}
 
+cat <<EOF >> infra_conf.txt
+
+Configuration de Traefik:
+
+Nom du conteneur: $CONTAINER_NAME
+ID du conteneur: $CONTAINER_ID
+IP du conteneur: $CONTAINER_IP
+Gateway du conteneur: $LXC_GATEWAY
+Port pour accéder à l'interface web: $D_PORT
+EOF
+
+
 echo "[*] Création du container LXC $CONTAINER_NAME avec IP $CONTAINER_IP..."
 
 # Création du container LXC
