@@ -134,6 +134,8 @@ fi
 
 echo "[*] Installation de Gitea dans le container..."
 
+sleep 6
+
 pct exec $CONTAINER_ID -- bash -c "apt update && apt install mariadb-server mariadb-client -y"
 
 echo "[*] Configuration de MariaDB..."
