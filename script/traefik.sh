@@ -164,6 +164,6 @@ pct exec $CONTAINER_ID -- bash -c "systemctl start traefik.service && systemctl 
 iptables -t nat -A PREROUTING -i vmbr0 -p tcp -d $SERVER_IP --dport 80 -j DNAT --to-destination $CONTAINER_IP:80
 iptables -t nat -A POSTROUTING -s $CONTAINER_IP -o vmbr0 -j MASQUERADE
 iptables -t nat -A PREROUTING -i vmbr0 -p tcp -d $SERVER_IP --dport $D_PORT -j DNAT --to-destination $CONTAINER_IP:8080
-iptables-save > /etc/iptables.rules
+iptables-save > /etc/iptables/rules.v4	
 
 echo "[✓] Traefik est maintenant installé et accessible sur http://$SERVER_IP:$D_PORT"
