@@ -67,17 +67,6 @@ while true; do
     fi
 done
 
-while true; do
-  read -p "Quelle est l'IP de votre serveur proxmox ? [172.16.1.110] : " SERVER1_IP
-  SERVER1_IP=${SERVER1_IP:-172.16.1.110}
-
-  if is_valid_ip "$SERVER1_IP"; then
-    break
-  else
-    echo "Erreur : L'adresse IP n'est pas valide. Merci de réessayer."
-  fi
-done
-
 echo "IP validée : $SERVER1_IP"
 
 while true; do
@@ -99,7 +88,7 @@ read -p "Sur quel port voulez vous accéder à PowerDNS Admin? [9595]: " D_PORT
 D_PORT=${D_PORT:-9595}
 
 while true; do
-  read -p "Entrez l'IP du serveur principal [10.1.1.15]: " SERVER_IP
+  read -p "Entrez l'IP du serveur proxmox [10.1.1.15]: " SERVER_IP
   SERVER_IP=${SERVER_IP:-10.1.1.15}
 
   if is_valid_ip "$SERVER_IP"; then
@@ -372,9 +361,9 @@ EOF'
 pct exec $CONTAINER_ID -- bash -c "rm -f /etc/nginx/sites-enabled/default && systemctl restart nginx &&  nginx -t && systemctl daemon-reexec && systemctl daemon-reload && systemctl enable --now pdnsadmin.service"
 
 # Règles NAT
-iptables -t nat -A PREROUTING -i vmbr0 -p tcp -d $SERVER1_IP --dport $D_PORT -j DNAT --to-destination $CONTAINER_IP:80
+iptables -t nat -A PREROUTING -i vmbr0 -p tcp -d SERVER_IP --dport $D_PORT -j DNAT --to-destination $CONTAINER_IP:80
 iptables -t nat -A POSTROUTING -s $CONTAINER_IP -o vmbr0 -j MASQUERADE
-iptables -t nat -A PREROUTING -p udp -d $SERVER1_IP --dport 53 -j DNAT --to-destination $CONTAINER_IP:53
+iptables -t nat -A PREROUTING -p udp -d SERVER_IP --dport 53 -j DNAT --to-destination $CONTAINER_IP:53
 iptables-save > /etc/iptables/rules.v4	
 
 echo "[✓] PowerDNS-Admin est maintenant installé et accessible sur http://$SERVER_IP:$D_PORT"
