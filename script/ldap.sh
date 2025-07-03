@@ -246,7 +246,7 @@ pct exec $TRAEFIK_ID -- bash -c "cat > /etc/traefik/dynamic/phpldapadmin.yml << 
 http:
   routers:
     phpldapadmin-router:
-      rule: \"Host(\phpldapadmin.$ZONE_NAME\)\"
+      rule: \"Host(\`phpldapadmin.$ZONE_NAME\`)\"
       entryPoints:
         - web
       service: phpldapadmin-service
