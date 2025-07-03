@@ -121,6 +121,7 @@ else
     echo "Conteneur LXC (ID: $CONTAINER_ID) créé avec succès."
 fi
 
+sleep 6
 
 # 🔧 Ajout de la configuration LXC pour permettre Docker
 CONF_FILE="/etc/pve/lxc/${CONTAINER_ID}.conf"
