@@ -56,7 +56,7 @@ D_PORT=${D_PORT:-1194}
 
 cat <<EOF >> infra_conf.txt
 
-Configuration de Traefik:
+Configuration du VPN:
 
 Nom du conteneur: $CONTAINER_NAME
 ID du conteneur: $CONTAINER_ID
