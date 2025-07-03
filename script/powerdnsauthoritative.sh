@@ -74,7 +74,7 @@ ZONE_NAME=${ZONE_NAME:-int.com}
 
 cat <<EOF >> infra_conf.txt
 
-Configuration de PDNS:
+Configuration de PDNS Authoritative:
 
 Nom du conteneur: $CONTAINER_NAME
 ID du conteneur: $CONTAINER_ID
