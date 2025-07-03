@@ -127,6 +127,8 @@ pct exec $CONTAINER_ID -- bash /root/openvpn-install.sh
 
 pct exec $CONTAINER_ID -- apt-get -y install libpam-ldap libnss-ldap nslcd
 
+# Redirection du traffic du VPN vers le container
+iptables -t nat -A PREROUTING -i vmbr0 -p udp -d $SERVER1_IP --dport $D_PORT -j DNAT --to-destination $CONTAINER_IP:$D_PORT
 
 echo "[✓] OpenVPN est installé et l'authentification LDAP est configurée."
 echo "[✓] Pour vous y connecter, importez le fichier sur la machine cliente et ajoutez la ligne auth-user-pass après auth SHA512 dans le fichier."
