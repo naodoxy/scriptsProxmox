@@ -136,6 +136,8 @@ pct exec $CONTAINER_ID -- bash -c "cat > /etc/traefik/traefik.yml <<EOF
 entryPoints:
   web:
     address: \":80\"
+  websecure:
+    address: \":443\"
 
 providers:
   file:
@@ -164,7 +166,9 @@ pct exec $CONTAINER_ID -- bash -c "systemctl start traefik.service && systemctl 
 
 # Règles NAT
 iptables -t nat -A PREROUTING -i vmbr0 -p tcp -d $SERVER_IP --dport 80 -j DNAT --to-destination $CONTAINER_IP:80
+iptables -t nat -A PREROUTING -i vmbr0 -p tcp -d $SERVER_IP --dport 443 -j DNAT --to-destination $CONTAINER_IP:443
 iptables -t nat -A POSTROUTING -s $CONTAINER_IP -o vmbr0 -j MASQUERADE
+-A POSTROUTING -d $CONTAINER_IP -p tcp -m tcp --dport 443 -j MASQUERADE
 iptables -t nat -A PREROUTING -i vmbr0 -p tcp -d $SERVER_IP --dport $D_PORT -j DNAT --to-destination $CONTAINER_IP:8080
 iptables-save > /etc/iptables/rules.v4	
 
