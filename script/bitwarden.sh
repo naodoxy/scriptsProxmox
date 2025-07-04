@@ -232,7 +232,6 @@ EOF
 '
 
 echo 'Fichier de configuration TLS généré dans /etc/traefik/dynamic/bitwarden_tls.yml'
-"
 
 pct exec $TRAEFIK_ID -- bash -c "cat > /etc/traefik/dynamic/bitwarden.yml << 'EOF'
 ---
