@@ -266,4 +266,4 @@ http:
 EOF"
 
 
-echo "[✓] Bitwarden est installé"
+echo "Bitwarden est installé"
