@@ -76,7 +76,7 @@ while true; do
     if [ "$ADMIN_PASSWORD" = "$PASSWORD_CONFIRM" ]; then
         break
     else
-        echo "❌ Les mots de passe ne correspondent pas. Veuillez réessayer."
+        echo "Les mots de passe ne correspondent pas. Veuillez réessayer."
     fi
 done
 
@@ -268,4 +268,4 @@ EOF"
 
 pct exec $TRAEFIK_ID -- systemctl restart traefik.service
 
-echo "[✓] LDAP est maintenant installé"
+echo "LDAP est maintenant installé"
