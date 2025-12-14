@@ -96,7 +96,7 @@ while true; do
     if [ "$G_DB_PASSWORD" = "$PASSWORD_CONFIRM" ]; then
         break
     else
-        echo "❌ Les mots de passe ne correspondent pas. Veuillez réessayer."
+        echo "Les mots de passe ne correspondent pas. Veuillez réessayer."
     fi
 done
 
@@ -211,4 +211,4 @@ http:
           - url: 'http://$CONTAINER_IP:3000'
 EOF"
 
-echo "[✓] Gitea est maintenant installé"
+echo "Gitea est maintenant installé"
