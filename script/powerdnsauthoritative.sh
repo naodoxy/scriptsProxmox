@@ -368,4 +368,4 @@ iptables -t nat -A POSTROUTING -s $CONTAINER_IP -o vmbr0 -j MASQUERADE
 iptables -t nat -A PREROUTING -p udp -d SERVER_IP --dport 53 -j DNAT --to-destination $CONTAINER_IP:53
 iptables-save > /etc/iptables/rules.v4	
 
-echo "[✓] PowerDNS-Admin est maintenant installé et accessible sur http://$SERVER_IP:$D_PORT"
+echo "PowerDNS-Admin est maintenant installé et accessible sur http://$SERVER_IP:$D_PORT"
